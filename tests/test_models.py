@@ -161,6 +161,61 @@ class TestProductModel(unittest.TestCase):
         product.delete()
         self.assertEqual(len(Product.all()), 0)
 
+    def test_deserialize_a_product(self):
+        """It should Deserialize a Product"""
+        data = {
+            "name": "Fedora",
+            "description": "A red hat",
+            "price": "12.50",
+            "available": True,
+            "category": "CLOTHS",
+        }
+        product = Product()
+        product.deserialize(data)
+        self.assertIsNotNone(product)
+        self.assertEqual(product.id, None)
+        self.assertEqual(product.name, "Fedora")
+        self.assertEqual(product.description, "A red hat")
+        self.assertEqual(product.price, Decimal("12.50"))
+        self.assertEqual(product.available, True)
+        self.assertEqual(product.category, Category.CLOTHS)
+
+    def test_deserialize_missing_data(self):
+        """It should not Deserialize a Product with missing data"""
+        data = {"name": "Fedora", "description": "A red hat"}
+        product = Product()
+        self.assertRaises(DataValidationError, product.deserialize, data)
+
+    def test_deserialize_bad_data(self):
+        """It should not Deserialize a Product with bad data"""
+        data = "this is not a dictionary"
+        product = Product()
+        self.assertRaises(DataValidationError, product.deserialize, data)
+
+    def test_deserialize_bad_available(self):
+        """It should not Deserialize a Product with bad available data"""
+        data = {
+            "name": "Fedora",
+            "description": "A red hat",
+            "price": "12.50",
+            "available": "true",  # string instead of boolean
+            "category": "CLOTHS",
+        }
+        product = Product()
+        self.assertRaises(DataValidationError, product.deserialize, data)
+
+    def test_deserialize_bad_category(self):
+        """It should not Deserialize a Product with bad category"""
+        data = {
+            "name": "Fedora",
+            "description": "A red hat",
+            "price": "12.50",
+            "available": True,
+            "category": "INVALID_CATEGORY",
+        }
+        product = Product()
+        self.assertRaises(DataValidationError, product.deserialize, data)
+
     def test_list_all_products(self):
         """It should List all Products in the database"""
         products = Product.all()
