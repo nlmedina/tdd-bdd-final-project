@@ -27,7 +27,7 @@ from flask import (
 )
 
 from service.common import status  # HTTP Status Codes
-from service.models import Product
+from service.models import Category, Product
 
 from . import app
 
@@ -111,10 +111,16 @@ def list_products():
 
     products = []
     name = request.args.get("name")
+    category = request.args.get("category")
 
     if name:
         app.logger.info("Find by name: %s", name)
         products = Product.find_by_name(name)
+    elif category:
+        app.logger.info("Find by category: %s", category)
+        # create enum from string
+        category_value = getattr(Category, category.upper())
+        products = Product.find_by_category(category_value)
     else:
         app.logger.info("Find all")
         products = Product.all()
