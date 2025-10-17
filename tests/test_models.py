@@ -30,7 +30,7 @@ import unittest
 from decimal import Decimal
 
 from service import app
-from service.models import Category, Product, db
+from service.models import Category, DataValidationError, Product, db
 from tests.factories import ProductFactory
 
 DATABASE_URI = os.getenv(
@@ -140,6 +140,17 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(len(products), 1)
         self.assertEqual(products[0].id, original_id)
         self.assertEqual(products[0].description, "testing")
+
+    def test_update_a_product_missing_id(self):
+        """It should not Update a Product with a missing id"""
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        self.assertIsNotNone(product.id)
+
+        product.description = "testing"
+        product.id = None
+        self.assertRaises(DataValidationError, product.update)
 
     def test_delete_a_product(self):
         """It should Delete a Product"""
