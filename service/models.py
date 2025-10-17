@@ -29,8 +29,9 @@ available (boolean) - True for products that are available for adoption
 
 """
 import logging
-from enum import Enum
 from decimal import Decimal
+from enum import Enum
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
