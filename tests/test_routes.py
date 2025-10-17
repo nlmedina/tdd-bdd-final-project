@@ -198,6 +198,13 @@ class TestProductRoutes(TestCase):
         updated_product = response.get_json()
         self.assertEqual(updated_product["description"], "unknown")
 
+    def test_update_product_not_found(self):
+        """It should not Update a Product thats not found"""
+        response = self.client.put(f"{BASE_URL}/0", json={"description": "unknown"})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        self.assertIn("was not found", data["message"])
+
     ######################################################################
     # Utility functions
     ######################################################################
